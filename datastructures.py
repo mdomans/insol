@@ -124,10 +124,10 @@ class Searchable(object):
     def __init__(self, *searchables, **kwargs):
         self.operator = kwargs.get('operator', DEFAULT_OPERATOR )
         if isinstance(searchables[0], Searchable):# we are inside more complicated query
-            self._parsed_search_term = operator.join([term for term in searchable.parsed_search_term])
+            self._parsed_search_term = self.operator.join([searchable.parsed_search_term for searchable in searchables])
         else:# we are simple creating one object
             self.value = searchables[0]
-            assert solr_query_field is not None
+            assert self.solr_query_field is not None
 
     # A helper method for returning a single solr term according to the fields mandatory and boost settings
     # Can be used to join multivalue queries (right?)
