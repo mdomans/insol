@@ -44,11 +44,21 @@ def test_searchables():
     
     class CategorySearchable(Searchable):
         multivalued = True
-        field_name = 'category'
-        solf_field = 'category'
+        solr_query_field = 'categories'
         solr_query_param = 'fq'
+    class RegionSearchable(Searchable):
+        multivalued = True
+        solr_query_field = 'regions'
+        solr_query_param = 'fq'
+    
+    reg1 = RegionSearchable(1)
+    cat1 = CategorySearchable(1)
+    
+    Searchable(reg1, cat1, operator='AND')
+    Searchable(reg1, cat1, operator='OR')
         
-    connection.search(Query(CategorySearchable(category_value)))
+       
+    #connection.search(Query(CategorySearchable(category_value)))
         
         
         

@@ -1,1 +1,2 @@
-from datastructures import Query, Searchable
+from datastructures import Searchable
+from query import Query
