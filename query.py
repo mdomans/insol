@@ -48,10 +48,9 @@ class Query(dict):
         self.rows = 20
 
 
-    #So we can do url.url
     def __getattr__(self, name):
         return self[name]
-    #So we can do url.url = '/'
+
     def __setattr__(self, name, value):
         self[name] = value
 
