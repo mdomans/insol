@@ -88,7 +88,7 @@ class Query(dict):
             else:
                 params.append( (key, value) )
 
-        if not q in self:
+        if not 'q' in self:
             params.append(('q','*:*'))
             
         query = urllib.urlencode(params)
