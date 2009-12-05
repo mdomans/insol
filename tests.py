@@ -41,6 +41,7 @@ def test_import_tools():
 
 def test_searchables():
     from datastructures import Searchable
+    from query import Query
     
     class CategorySearchable(Searchable):
         multivalued = True
@@ -54,10 +55,10 @@ def test_searchables():
     reg1 = RegionSearchable(1)
     cat1 = CategorySearchable(1)
     
-    Searchable(reg1, cat1, operator='AND')
-    Searchable(reg1, cat1, operator='OR')
-        
-       
+    anded = Searchable(reg1, cat1, operator='AND')
+    ored = Searchable(reg1, cat1, operator='OR')
+    q = Query(anded)
+    return locals()
     #connection.search(Query(CategorySearchable(category_value)))
         
         

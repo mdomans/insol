@@ -26,81 +26,9 @@
 
 
 
-from datetime import date, datetime
 from converters import py_to_solr
 from config import DEFAULT_OPERATOR
 
-
-class ResultDict(dict):
-    
-    def __init__(self, data = {}):
-        self.update(data)
-
-    def __getattr__(self, name):
-        return self[name]
-    def __setattr__(self, name, value):
-        self[name] = value    
-    def __nonzero__(self):
-        if self.items():
-            return True
-        return False
-        
-        
-class CleverDict(ResultDict):
-    """
-    Used for Facet, Query and Highlight
-    
-    based on :
-    
-    http://haystacksearch.org/
-    
-    
-    """
-
-    def __init__(self, *args, **kwargs):
-        dict.__setattr__(self, '_name', kwargs.pop('instance', self.__class__.__name__.lower()))
-        self._clean(*args)
-        dict.__init__(self, **kwargs)
-
-    def items(self):
-        temp_list = []
-        for key, value in  super(CleverDict, self).items():
-            if isinstance(value, CleverDict):
-                temp_list.extend([('%s.%s' % (self._name, k), py_to_solr(v)) for k, v in value.items() if v])
-            elif isinstance(value, list):
-                temp_list.extend([('%s.%s' % (self._name, key), py_to_solr(v)) for v in value])
-            else:
-                temp_list.append(('%s.%s' % (self._name, key), py_to_solr(value)))
-        return temp_list
-
-
-    def as_list(self):
-        return [(key, value) for key, value in self.items()]
-
-    def _clean(self, *args):
-        """
-        Expects a list of tuples like:
-        [('facet.field', 'model'), (facet.limit, 10)]
-        """
-        if not args or not isinstance(args[0], list):
-            return None
-        for key, value in  args[0]:
-            if key.startswith(self._name):
-                bits = key.split('.')
-                if len(bits) is 1:
-                    # something like ('facet', True)
-                    continue
-                try:
-                    v = self[bits[1]]
-                    if isinstance(v, list):
-                        self[bits[1]].append(value)
-                    elif isinstance(v, CleverDict):
-                        self[bits[1]][bits[2]] = value
-                    else:
-                        self[bits[1]] = value
-                except KeyError:
-                    #Doesn't exist yet.
-                    self[bits[1]] = value
 
 class Searchable(object):
     """ 
@@ -131,6 +59,11 @@ class Searchable(object):
 
     # A helper method for returning a single solr term according to the fields mandatory and boost settings
     # Can be used to join multivalue queries (right?)
+    
+    @property
+    def _id(self):
+        return '%s_%s'%(self.__class__.__name__, hash(self.parsed_search_term) )
+    
     @property
     def parsed_search_term(self):
         if not self._parsed_search_term:
@@ -151,4 +84,34 @@ class Searchable(object):
             temp.append('^%s'%str(cls.boost))
         temp.append(')')
         return ''.join(temp)
+
+    @classmethod
+    def indexed_term(cls, key, value):
+        """
+        For use in indexing
+        """
+        pass
+
+class Facet(Searchable):
+    """
+
+    Class for handling faceting in pythonic way, yet with a somehow shameful biterness of java.
+    Used only as an attribute of Query class instance.
+
+    .. warning:: 
+        Beware, this should only be used in conjuntion with Query class instance.
+
+
+    """
+    solr_query_param = 'facets'
     
+class Stats(Searchable):
+    """
+
+    Class for handling stats, just as Facet class instances
+
+    .. warning:: 
+        Beware, this should only be used in conjuntion with Query class instance.
+    """
+    solr_query_param = 'stats'
+
