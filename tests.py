@@ -71,7 +71,7 @@ def test_searchables():
     #connection.search(Query(CategorySearchable(category_value)))
         
 def test_connection():
-    from datastructures import Searchable
+    from datastructures import Searchable, Facet
     from query import Query
     import connection
     import config
@@ -93,8 +93,21 @@ def test_connection():
     config.set_config('dev', '0.0.0.0', 8983)
     config.load_config('dev') # set up addresses and stuff 
     
-    connection.search(Query(OR_searchable))
+    connection.search(Query(OR_searchable, Facet('regions', mincount=1)))
         
+def test_faceting():
+    from datastructures import Facet
+    from query import Query
+    import connection
+    import config
+    config.set_config('dev', '0.0.0.0', 8983)
+    config.load_config('dev') # set up addresses and stuff 
+    
+    response = connection.search(Query(Facet('regions', mincount=1)))
+
+    
+    
+    
     
     
     

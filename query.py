@@ -43,9 +43,10 @@ class Query(dict):
         self.q = {}
         self.sort = []
         self.fq = {}
+        self.facets = {}
         self.fl = []
         self.start = 0
-        self.rows = 20
+        self.rows = 0
 
 
     def __getattr__(self, name):
@@ -70,9 +71,9 @@ class Query(dict):
             elif searchable.solr_query_param == 'fq':
                 self.fq[searchable._id] = searchable.parsed_search_term
             elif searchable.solr_query_param == 'facet':
-                self.facets[searchable._id] == searchable.parsed_search_term
+                self.facets[searchable._id] = searchable.parsed_search_term
             elif searchable.solr_query_param == 'stats':
-                self.stats[searchable._id] == searchable.parsed_search_term
+                self.stats[searchable._id] = searchable.parsed_search_term
         
     @property
     def _url(self):
@@ -81,23 +82,25 @@ class Query(dict):
         for key, value in self.items():
             if not value or key.startswith('_'):
                 continue
-            if key in ['q','fq','stats','facets']:
+            if key in ['q','fq']:
                 params.append( (key, ''.join(value.values())) )
+            elif key in ['stats','facets']:
+                for facet_params in value.values():
+                    params.extend(facet_params)
             elif key == 'sort':
                 params.append( ('sort', ','.join(value)), )
             else:
                 params.append( (key, value) )
 
-        if not 'q' in self:
+        if not 'q' in self or not self['q']:
             params.append(('q','*:*'))
-            
         query = urllib.urlencode(params)
 
-        if hasattr(self, 'facet') and self.facets:
+        if 'facets' in self and self.facets:
             query = '%s&%s' % (query, 'facet=true')
 
-        if hasattr(self, 'stats') and self.stats:
-            query = '%s&%s&%s' % (query, 'stats=on')
+        if 'stats' in self and self.stats:
+            query = '%s&%s' % (query, 'stats=on')
             
         return query
 

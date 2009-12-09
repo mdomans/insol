@@ -55,7 +55,6 @@ class Searchable(object):
             self._parsed_search_term = self.operator.join([searchable.parsed_search_term for searchable in searchables])
         else:# we are simple creating one object
             self.value = searchables[0]
-            assert self.solr_query_field is not None
 
     # A helper method for returning a single solr term according to the fields mandatory and boost settings
     # Can be used to join multivalue queries (right?)
@@ -85,12 +84,7 @@ class Searchable(object):
         temp.append(')')
         return ''.join(temp)
 
-    @classmethod
-    def indexed_term(cls, key, value):
-        """
-        For use in indexing
-        """
-        pass
+
 
 class Facet(Searchable):
     """
@@ -103,15 +97,36 @@ class Facet(Searchable):
 
 
     """
-    solr_query_param = 'facets'
+    solr_query_param = 'facet'  #default target for solr query, either q or fq.
     
-class Stats(Searchable):
-    """
+    
+    def __init__(self, *args, **kwargs):
+        self._parsed_search_term = self.__class__.search_term(*args, **kwargs)
+        
+    
+    @property
+    def _id(self):
+        return '%s_%s'%(self.__class__.__name__, hash(tuple(self.parsed_search_term)) )
 
-    Class for handling stats, just as Facet class instances
-
-    .. warning:: 
-        Beware, this should only be used in conjuntion with Query class instance.
-    """
-    solr_query_param = 'stats'
+    
+    @classmethod
+    def search_term(cls, field, prefix=None, sort=None, limit=None, offset=None, mincount=None, missing=False, method=None):
+        temp = []
+        temp.append( ('facet.field', field ))
+        if prefix:
+            temp.append( ('f.%s.facet.prefix' % field, prefix) )
+        if sort:
+            temp.append( ('f.%s.facet.sort'% field , 'true') )
+        if limit:
+            temp.append( ('f.%s.limit' % field, limit) )
+        if offset:
+            temp.append( ('f.%s.offset'% field, offset) )
+        if mincount:
+            temp.append( ('f.%s.mincount'% field, mincount) )
+        if missing:
+            temp.append( ('f.%s.missing'% field , 'true'))
+        if method:
+            temp.append( ('f.%s.method' % field, method) )
+        return temp
+            
 

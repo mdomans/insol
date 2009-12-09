@@ -64,7 +64,7 @@ class SelectResponse(Response):
         creating a nested dict, requires faceting parameters issued in query
 
         """
-        loc_get_facet_as_dict = self.x_get_facet_as_dict
+        loc_get_facet_as_dict = self.get_facet_as_dict
         f_keys = self._facets['facet_fields'].keys()
         return dict(zip(f_keys, map(loc_get_facet_as_dict, f_keys)))
 

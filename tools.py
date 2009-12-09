@@ -22,6 +22,7 @@ svns pre commit hook should stop me from commiting this file!
 """
 
 import config, connection
+from itertools import imap
 
 def iterblocks(iterable, size, **kwds):
     """
