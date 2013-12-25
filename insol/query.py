@@ -44,6 +44,7 @@ class Query(dict):
         self.sort = []
         self.fq = {}
         self.facets = {}
+        self.stats = {}
         self.fl = []
         self.start = 0
         self.rows = 0
@@ -60,10 +61,21 @@ class Query(dict):
         """
         if args and isinstance(args[0], Searchable):# we have query to be built from Searchables
             self._build_from_searchables(args)
-
         else:
             self._build_from_args(*args, **kwargs)
-    
+
+    def _build_from_args(self, *args, **kwargs):
+        if args or 'q' in kwargs:
+            self.q['from_args'] = kwargs.get('q') or args and args[0]
+        if 'fq' in kwargs:
+            self.fq['from_args'] = kwargs.get('fq')
+        if 'facets' in kwargs:
+            self.facets['from_args'] = kwargs.get('facets')
+        if 'stats' in kwargs:
+            self.stats['from_args'] = kwargs.get('stats')
+
+
+
     def _build_from_searchables(self, searchables):
         for searchable in searchables:
             if searchable.solr_query_param == 'q':
