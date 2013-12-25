@@ -1,0 +1,6 @@
+insol
+=====
+
+Python - Solr API
+
+
