@@ -3,7 +3,7 @@ __author__ = 'alakota'
 import query, config, connection
 
 def find(*args, **kwargs):
-    config.set_config('dev', '0.0.0.0', 8983)
+    config.set_config('dev', '0.0.0.0', 8983, core='collection')
     config.load_config('dev')
     connection_kwargs = {}
     if 'wt' in kwargs:

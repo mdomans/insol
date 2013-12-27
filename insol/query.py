@@ -66,7 +66,11 @@ class Query(dict):
 
     def _build_from_args(self, *args, **kwargs):
         if args or 'q' in kwargs:
-            self.q['from_args'] = kwargs.get('q') or args and args[0]
+            q = kwargs.get('q') or args and args[0]
+            # assert isinstance(q, basestring),
+            if isinstance(q, basestring):
+                raise Warning("q parameter should be a string")
+                self.q['from_args'] = q
         if 'fq' in kwargs:
             self.fq['from_args'] = kwargs.get('fq')
         if 'facets' in kwargs:

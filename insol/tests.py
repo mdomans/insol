@@ -19,7 +19,7 @@ tests.py
 Created by mdomans on 2009-03-26.
 """
 
-import nose
+#import nose
 
 
 def test_import_config():
