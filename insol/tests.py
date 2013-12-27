@@ -34,8 +34,6 @@ def test_import_results():
     import results
 def test_import_converters():
     import converters
-def test_import_manager():
-    import manager
 def test_import_tools():
     import tools
 

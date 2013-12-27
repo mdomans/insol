@@ -23,8 +23,7 @@
 """
 
 
-from datastructures import Searchable, py_to_solr
-import config
+from datastructures import Searchable
 import urllib
 
 

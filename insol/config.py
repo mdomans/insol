@@ -33,6 +33,14 @@ SOLR_UPDATE_PATH = 'update'
 SOLR_PING_PATH = 'admin/ping'
 DEFAULT_OPERATOR = 'OR'
 
+CONFIGS = {
+    'dev': {
+        'host': '0.0.0.0',
+        'port': '8983',
+        'core': 'collection',
+    },
+}
+DEFAULT_CONFIG = 'dev'
 
 CONFIGS = {}
 SEARCH_PLUGINS = []
