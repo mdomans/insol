@@ -25,7 +25,6 @@ def find(*args, **kwargs):
     connection_kwargs = {}
     if 'wt' in kwargs:
         connection_kwargs['wt'] = kwargs.pop('wt')
-    print connection._get_solr_select_url()
     return connection.search(query.Query(*args, **kwargs), **connection_kwargs)
 
 def index():
