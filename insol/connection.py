@@ -11,6 +11,7 @@
 
 """
 
+import json
 import httplib
 import os.path
 import socket
@@ -22,12 +23,6 @@ import exceptions
 import config
 from results import SelectResponse
 from converters import msg_from_iterable
-
-try:
-    import simplejson
-except ImportError:
-    raise ImportError, 'insol depends on simplejson module but it was not found'
-    
 
 
 def reload_config():
@@ -73,7 +68,7 @@ def _handle_connection(connection, **kwargs):
     with .read method and performs decoding on it,
     extra parameter decoder for overload of default one
     """
-    decoder = kwargs.get('decoder', simplejson.loads)
+    decoder = kwargs.get('decoder', json.loads)
     return decoder(connection.read())
 
 def _build_response(data, **kwargs):
