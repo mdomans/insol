@@ -21,7 +21,7 @@ CONFIGS = {
     'dev': {
         'host': '0.0.0.0',
         'port': '8983',
-        'core': 'collection',
+        'core': '',
     },
 }
 DEFAULT_CONFIG = 'dev'
