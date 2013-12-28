@@ -21,12 +21,6 @@ def find(*args, **kwargs):
     - passes that query into connection for searching
 
     """
-    config.set_config(
-        config.DEFAULT_CONFIG,
-        config.CONFIGS[config.DEFAULT_CONFIG]['host'],
-        config.CONFIGS[config.DEFAULT_CONFIG]['port'],
-        core=config.CONFIGS[config.DEFAULT_CONFIG]['core']
-    )
     config.load_config(config.DEFAULT_CONFIG)
     connection_kwargs = {}
     if 'wt' in kwargs:

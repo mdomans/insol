@@ -11,7 +11,7 @@ SEARCH_FACET_PARAMS = ''
 SEARCH_HL_PARAMS = ''
 SOLR_ADDRESS = ''
 SOLR_PORT = 0
-SOLR_CORE = 'collection'
+SOLR_CORE = ''
 SOLR_SELECT_PATH = 'select'
 SOLR_UPDATE_PATH = 'update'
 SOLR_PING_PATH = 'admin/ping'
@@ -19,7 +19,7 @@ DEFAULT_OPERATOR = 'OR'
 
 CONFIGS = {
     'dev': {
-        'host': '0.0.0.0',
+        'host': 'localhost',
         'port': '8983',
         'core': '',
     },
