@@ -38,7 +38,7 @@ def py_to_solr(value):
     elif isinstance(value, unicode):
         pass
     elif isinstance(value, str):
-        value = unicode(value, 'utf8')
+        value = value.decode('utf-8')
     else:
         value = unicode(value)
     return value

@@ -11,7 +11,7 @@
 
 """
 
-import query,config, connection
+import query, config, connection
 
 def find(*args, **kwargs):
     """

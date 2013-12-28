@@ -130,7 +130,7 @@ def commit(wait_flush = False, wait_searcher = False):
     cmd = '<commit %s %s />' % (wait_flush_cmd, wait_searcher_cmd)
     return _update(cmd)
 
-def optimize(wait_flush = False):
+def optimize(wait_flush=False):
     """
     Send 'optimize' command to solr. Rebuilds and optimizes solr index.
     
