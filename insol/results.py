@@ -47,7 +47,7 @@ class SelectResponse(Response):
     @property
     def facet_fields_dict(self):
         """
-        .. warning:: watchout, this may cost you some RAM
+        .. warning:: watch out, this may cost you some RAM
 
         Builds a dict, where faceting field names are keys and faceting dicts are value, thus
         creating a nested dict, requires faceting parameters issued in query

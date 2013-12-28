@@ -7,23 +7,6 @@ tests.py
 Created by mdomans on 2009-03-26.
 """
 
-#import nose
-
-
-def test_import_config():
-    import config
-def test_import_connection():
-    import connection
-def test_import_datastructures():
-    import datastructures
-def test_import_query():
-    import query
-def test_import_results():
-    import results
-def test_import_converters():
-    import converters
-def test_import_tools():
-    import tools
 
 def test_searchables():
     from datastructures import Searchable
@@ -91,11 +74,18 @@ def test_faceting():
     
     response = connection.search(Query(Facet('regions', mincount=1)))
 
+def test_shortcuts():
+    import shortcuts
+    assert shortcuts.find()
+    resp = shortcuts.find()
+    assert resp.docs
+    assert resp.hits
+    assert resp.params
+    assert resp.params == {u'q': u'*:*', u'wt': u'json'}
+    assert shortcuts.find({'q': '*:*'})
+
+def test():
+    test_shortcuts()
     
-    
-    
-    
-    
-    
-    
-    
+if __name__ == '__main__':
+    test()

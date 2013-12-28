@@ -25,8 +25,6 @@ CONFIGS = {
     },
 }
 DEFAULT_CONFIG = 'dev'
-
-CONFIGS = {}
 SEARCH_PLUGINS = []
 
 

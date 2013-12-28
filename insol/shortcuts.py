@@ -32,3 +32,6 @@ def find(*args, **kwargs):
     if 'wt' in kwargs:
         connection_kwargs['wt'] = kwargs.pop('wt')
     return connection.search(query.Query(*args, **kwargs), **connection_kwargs)
+
+def index():
+    pass
