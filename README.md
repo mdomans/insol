@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/mdomans/insol.png?branch=master)](https://travis-ci.org/mdomans/insol)
 insol
 =====
 ***
