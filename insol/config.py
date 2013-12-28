@@ -9,9 +9,6 @@ Created by michal.domanski on 2009-02-24.
 
 SEARCH_FACET_PARAMS = ''
 SEARCH_HL_PARAMS = ''
-SOLR_ADDRESS = ''
-SOLR_PORT = 0
-SOLR_CORE = ''
 SOLR_SELECT_PATH = 'select'
 SOLR_UPDATE_PATH = 'update'
 SOLR_PING_PATH = 'admin/ping'
@@ -25,6 +22,10 @@ CONFIGS = {
     },
 }
 DEFAULT_CONFIG = 'dev'
+config = CONFIGS[DEFAULT_CONFIG]
+SOLR_CORE = config['core']
+SOLR_PORT = config['port']
+SOLR_ADDRESS = config['host']
 SEARCH_PLUGINS = []
 
 
