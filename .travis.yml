@@ -3,4 +3,5 @@ language: python
 python:
   - "2.7"
 
-script: python run-tests.py 
+script: 
+  - python run-tests.py 
