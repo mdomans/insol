@@ -12,9 +12,27 @@ The core concept of insol is that building properly structured queries is hard w
 
 What's more, __insol__ does not perform any _result-to-object_ evaluation, avoiding unnecessary DB hits. In case you need such mode of operation, it's easy to implement.
 
-***
+## Instalation
 
-###Soon to be added:
+To install latest version from PyPI typing:
+
+`pip install insol`
+
+is enough.
+Or you can install this package (cutting edge version):
+`python setup.py install`
+
+## Usage
+
+To simply try to see what happens or for testing particular queries against your Solr instance:
+
+```python
+from insol.shortcuts import find
+resp = find()
+print resp.docs
+```
+
+##Roadmap:
 
 * index updates in JSON format
 * moving to **requests** library for handling HTTP
