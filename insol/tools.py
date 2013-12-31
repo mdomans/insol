@@ -69,7 +69,8 @@ def index(add_iterable, remove_iterable, config_name = None ):
     and indexes data. If error occurs, recuretly finds error source.     \n
     """
 
-    if config_name : config.load_config(config_name)
+    if config_name:
+        config.load_config(config_name)
     errors = []
     def recurently_do(operation, iterable, granulation=1):
         iterables = granulate(iterable, granulation)

@@ -1,11 +1,21 @@
 #!/usr/bin/env python
 
-from distutils.core import setup
+from setuptools import setup, find_packages
 
 setup(name='insol',
-      version='1.0.0',
-      description='insol: Solr search server API for python',
+      version='2.0.1',
+      description='Solr search server API for python',
       author='Michael Domanski',
       author_email='mdomans@gmail.com',
-      packages=['insol'],
+      packages=find_packages(),
+      license='Apache 2.0',
+      install_requires = ['requests>=2.1.0'],
+      classifiers=[
+          'Environment :: Console',
+          'Environment :: Web Environment',
+          'Operating System :: MacOS :: MacOS X',
+          'Operating System :: Microsoft :: Windows',
+          'Operating System :: POSIX',
+          'Programming Language :: Python',
+          ],
      )
