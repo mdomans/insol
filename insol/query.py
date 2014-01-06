@@ -12,9 +12,8 @@
 """
 
 
-from datastructures import Searchable
 import urllib
-
+import datastructures
 
 
 class Query(dict):
@@ -22,16 +21,16 @@ class Query(dict):
 
     def __init__(self, *args, **kwargs):
         self.clear()
-        self._clean(*args, **kwargs)
+        self._build(*args, **kwargs)
 
     def clear(self):
         """
            Clear any changes to query
         """
-        self.q = {}
+        self.q = []
         self.sort = []
-        self.fq = {}
-        self.facets = {}
+        self.fq = []
+        self.facets = []
         self.stats = {}
         self.fl = []
         self.start = 0
@@ -44,57 +43,64 @@ class Query(dict):
     def __setattr__(self, name, value):
         self[name] = value
 
-    def _clean(self, *args, **kwargs):
-        """        
-        """
-        if args and isinstance(args[0], Searchable):# we have query to be built from Searchables
-            self._build_from_searchables(args)
-        else:
-            self._build_from_args(*args, **kwargs)
+    def _build(self, *args, **kwargs):
+        if args:
+            self._parse_args(args)
+        if kwargs:
+            self._parse_kwargs(kwargs)
 
-    def _build_from_args(self, *args, **kwargs):
-        if args or 'q' in kwargs:
-            q = kwargs.get('q') or args and args[0]
-            # assert isinstance(q, basestring),
-            if isinstance(q, basestring):
-                raise Warning("q parameter should be a string")
-                self.q['from_args'] = q
+    def _parse_args(self, args):
+        if args and isinstance(args[0], dict):
+            self._parse_kwargs(args[0])
+        if args and isinstance(args[0], basestring):
+            self.q.append(('q',args[0]))
+        for arg in args:
+            if isinstance(arg, datastructures.Facet):
+                self.facets.extend(arg.parsed_search_term)
+            elif isinstance(arg, datastructures.Filter):
+                self.fq.extend(arg.parsed_search_term)
+
+
+    def _parse_kwargs(self, kwargs):
+        if 'q' in kwargs:
+            self.q.append(('q',kwargs.get('q')))
         if 'fq' in kwargs:
-            self.fq['from_args'] = kwargs.get('fq')
+            fq = kwargs['fq']
+            assert isinstance(fq, list), "fq argument needs to be a list"
+            self.fq = [x for y in [self._parse_fq(f) for f in fq] for x in y]
+
         if 'facets' in kwargs:
-            self.facets['from_args'] = kwargs.get('facets')
+            facets = kwargs['facets']
+            assert isinstance(facets, list), "facets argument needs to be a list"
+            self.facets = [x for y in [self._parse_facet(f) for f in facets] for x in y]
+
         if 'stats' in kwargs:
-            self.stats['from_args'] = kwargs.get('stats')
+            self.stats['from_kwargs'] = kwargs.get('stats')
 
+    def _parse_fq(self, f):
+        if isinstance(f, basestring):
+            return [('fq', f)]
+        if isinstance(f, tuple):
+            return [('fq', ':'.join(f))]
+        if isinstance(f, datastructures.Filter):
+            return f.parsed_search_term
 
+    def _parse_facet(self, f):
+        if isinstance(f, basestring):
+            return [('facet.field', f)]
+        if isinstance(f, datastructures.Facet):
+            return f.parsed_search_term
 
-    def _build_from_searchables(self, searchables):
-        for searchable in searchables:
-            if searchable.solr_query_param == 'q':
-                self.q[searchable._id] = searchable.parsed_search_term
-            elif searchable.solr_query_param == 'fq':
-                self.fq[searchable._id] = searchable.parsed_search_term
-            elif searchable.solr_query_param == 'facet':
-                self.facets[searchable._id] = searchable.parsed_search_term
-            elif searchable.solr_query_param == 'stats':
-                self.stats[searchable._id] = searchable.parsed_search_term
-        
     @property
     def _url(self):
         params = []
         q = False
         for key, value in self.items():
-            if not value or key.startswith('_'):
-                continue
-            if key in ['q','fq']:
-                params.append( (key, ''.join(value.values())) )
-            elif key in ['stats','facets']:
-                for facet_params in value.values():
-                    params.extend(facet_params)
+            if key in ['q', 'fq', 'fl', 'facets']:
+                params.extend(value)
             elif key == 'sort':
                 params.append( ('sort', ','.join(value)), )
-            else:
-                params.append( (key, value) )
+
 
         if not 'q' in self or not self['q']:
             params.append(('q','*:*'))
@@ -105,6 +111,9 @@ class Query(dict):
 
         if 'stats' in self and self.stats:
             query = '%s&%s' % (query, 'stats=on')
+
+        if 'wt' in self and self.wt:
+            query = '%s&wt=%s' % (query, self.wt)
             
         return query
 

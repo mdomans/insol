@@ -63,16 +63,37 @@ def test_connection():
     config.load_config('dev') # set up addresses and stuff 
     
     connection.search(Query(OR_searchable, Facet('regions', mincount=1)))
-        
-def test_faceting():
-    from datastructures import Facet
+
+def test_query_syntax():
+    from datastructures import Facet, Filter
     from query import Query
-    import connection
-    import config
-    config.set_config('dev', '0.0.0.0', 8983)
-    config.load_config('dev') # set up addresses and stuff 
-    
-    response = connection.search(Query(Facet('regions', mincount=1)))
+    from connection import InsolConnection
+    conn = InsolConnection('0.0.0.0', 8983, 'collection')
+
+    resp = conn.search(Query('test', Facet('cat', mincount=1)))
+    assert resp.docs
+    assert resp.facets
+
+    resp = conn.search(Query(Facet('cat', mincount=1)))
+    assert resp.facets, "Query: *:* with faceting failed"
+
+    resp = conn.search(Query())
+    assert resp.docs, "Query: *:* failed"
+
+    resp = conn.search(Query(facets=['cat']))
+    assert resp.facets, 'Faceting query failed'
+
+    resp = conn.search(Query(facets=[Facet('cat')]))
+    assert resp.facets, 'Faceting query failed'
+
+    resp = conn.search(Query('test', fq=[('name','test')]))
+    assert resp.docs, "Failed fq query"
+
+    resp = conn.search(Query('test', fq=[('name','test')], facets=[Facet('cat', mincount=1)]))
+    assert resp.docs, "Failed fq query"
+
+    resp = conn.search(Query('*:*', fq=[Filter('cat', 'electronics')], facets=[Facet('cat')]))
+    assert resp.docs, "Failed fq and facets object query"
 
 def test_shortcuts():
     import shortcuts
@@ -85,7 +106,7 @@ def test_shortcuts():
     assert shortcuts.find({'q': '*:*'})
 
 def test():
-    test_shortcuts()
+    test_query_syntax()
     
 if __name__ == '__main__':
     test()

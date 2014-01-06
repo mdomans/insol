@@ -73,20 +73,39 @@ class Searchable(object):
         temp.append(')')
         return ''.join(temp)
 
+class Filter(Searchable):
+    """
+    Class for use of advanced filtering options and/or writing down queries as objects.
+    """
 
+    solr_query_param = 'fq'
+
+    def __init__(self, *args, **kwargs):
+        self._parsed_search_term = self.__class__.search_term(*args, **kwargs)
+
+
+    @classmethod
+    def search_term(cls, field, value, cache=None, cost=None):
+        full_field = '%s:%s' % (field, value)
+        if cache != None or cost:
+            opts = '{!'
+            if cache != None:
+                opts = '%s cache=%s' % (opts, cache and 'true' or 'false')
+            if cost:
+                opts = '%s cost=%s' % (opts, cost)
+            full_field = "%s}%s" % (opts, full_field)
+        return [(cls.solr_query_param, full_field)]
 
 class Facet(Searchable):
     """
-
     Class for handling faceting in pythonic way, yet with a somehow shameful biterness of java.
     Used only as an attribute of Query class instance.
 
     .. warning:: 
         Beware, this should only be used in conjuntion with Query class instance.
 
-
     """
-    solr_query_param = 'facet'  #default target for solr query, either q or fq.
+    solr_query_param = 'facet'
     
     
     def __init__(self, *args, **kwargs):
@@ -99,23 +118,67 @@ class Facet(Searchable):
 
     
     @classmethod
-    def search_term(cls, field, prefix=None, sort=None, limit=None, offset=None, mincount=None, missing=False, method=None):
-        temp = []
-        temp.append( ('facet.field', field ))
+    def search_term(cls, field,
+                    prefix=None, sort=None, limit=None,
+                    offset=None, mincount=None, missing=False,
+                    method=None, query=None):
+        temp = [('facet.field', field)]
         if prefix:
-            temp.append( ('f.%s.facet.prefix' % field, prefix) )
+            temp.append(('f.%s.facet.prefix' % field, prefix))
         if sort:
-            temp.append( ('f.%s.facet.sort'% field , 'true') )
+            temp.append(('f.%s.facet.sort' % field, 'true'))
         if limit:
-            temp.append( ('f.%s.limit' % field, limit) )
+            temp.append(('f.%s.facet.limit' % field, limit))
         if offset:
-            temp.append( ('f.%s.offset'% field, offset) )
+            temp.append(('f.%s.facet.offset' % field, offset))
         if mincount:
-            temp.append( ('f.%s.mincount'% field, mincount) )
+            temp.append(('f.%s.facet.mincount' % field, mincount))
         if missing:
-            temp.append( ('f.%s.missing'% field , 'true'))
+            temp.append(('f.%s.facet.missing' % field , 'true'))
         if method:
-            temp.append( ('f.%s.method' % field, method) )
+            temp.append(('f.%s.facet.method' % field, method))
+        if query:
+            temp.append(('f.%s.facet.query' % field, query))
         return temp
             
+class DateFacet(Searchable):
+    solr_query_param = 'facet'
 
+    def __init__(self, *args, **kwargs):
+        self._parsed_search_term = self.__class__.search_term(*args, **kwargs)
+
+    @classmethod
+    def search_term(cls, field,
+                    start=None, end=None, gap=None,
+                    hardend=None, other=None, include=False):
+        temp = [('facet.date', field)]
+        if start:
+            temp.append(('f.%s.facet.start' % field, start))
+        if end:
+            temp.append(('f.%s.facet.end' % field, end))
+        if gap:
+            temp.append(('f.%s.facet.gap' % field, gap))
+        if hardend:
+            temp.append(('f.%s.facet.hardend' % field, 'true'))
+        return temp
+
+class RangeFacet(Searchable):
+    solr_query_param = 'facet'
+
+    def __init__(self, *args, **kwargs):
+        self._parsed_search_term = self.__class__.search_term(*args, **kwargs)
+
+    @classmethod
+    def search_term(cls, field,
+                    start=None, end=None, gap=None,
+                    hardend=None, other=None, include=False):
+        temp = [('facet.date', field)]
+        if start:
+            temp.append(('f.%s.facet.start' % field, start))
+        if end:
+            temp.append(('f.%s.facet.end' % field, end))
+        if gap:
+            temp.append(('f.%s.facet.gap' % field, gap))
+        if hardend:
+            temp.append(('f.%s.facet.hardend' % field, 'true'))
+        return temp
