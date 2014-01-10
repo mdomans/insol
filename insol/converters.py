@@ -142,5 +142,25 @@ def solr_inf(x):
     return x
 
 
+def datemath(start, end, gap):
+    """
+    Function to parse pythonic objects into Solr DateMath
+     compatible string
+     
+    :rtype dict: dict with start, end and gap converted to Solr DateMath compatible params
+    :param datetime start: begining of the date facet
+    :param datetime end: end of the date facet
+    :param timedelta gap: gap for faceting - increment between consecutive facets
+    """
+    now = datetime.now()
+    assert start <= end, "Date range start value cannot be greater then end"
+    start_td = start - now
+    end_td = end - now
+    return {
+        'start': 'NOW%sSECONDS' % int(start_td.total_seconds()),
+        'end': 'NOW%sSECONDS' % int(end_td.total_seconds()),
+        'gap': '+%sSECONDS' % int(gap.total_seconds()),
+    }
+
 
 

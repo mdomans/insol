@@ -65,7 +65,7 @@ def test_connection():
     connection.search(Query(OR_searchable, Facet('regions', mincount=1)))
 
 def test_query_syntax():
-    from datastructures import Facet, Filter
+    from datastructures import Facet, Filter, DateFacet, RangeFacet
     from query import Query
     from connection import InsolConnection
     conn = InsolConnection('0.0.0.0', 8983, 'collection')
