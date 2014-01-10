@@ -156,11 +156,18 @@ def datemath(start, end, gap):
     assert start <= end, "Date range start value cannot be greater then end"
     start_td = start - now
     end_td = end - now
-    return {
-        'start': 'NOW%sSECONDS' % int(start_td.total_seconds()),
-        'end': 'NOW%sSECONDS' % int(end_td.total_seconds()),
-        'gap': '+%sSECONDS' % int(gap.total_seconds()),
-    }
+    _n = 'NOW-0SECONDS'
+    resp = dict()
+    for field, value in [
+        ('start', start_td),
+        ('end', end_td),
+    ]:
+        if int(value.total_seconds()):
+            resp[field] = 'NOW%sSECONDS' % int(value.total_seconds())
+        else:
+            resp[field] = 'NOW-0SECONDS'
+    resp['gap'] = '+%sSECONDS' % int(gap.total_seconds())
+    return resp
 
 
 

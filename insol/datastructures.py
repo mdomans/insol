@@ -137,7 +137,7 @@ class Facet(Searchable):
         return temp
 
 
-class DateFacet(Searchable):
+class DateFacet(Facet):
     solr_query_param = 'facet'
 
     def __init__(self, *args, **kwargs):
@@ -155,7 +155,7 @@ class DateFacet(Searchable):
             temp.append(('f.%s.facet.date.hardend' % field, 'true'))
         return temp
 
-class RangeFacet(Searchable):
+class RangeFacet(Facet):
     solr_query_param = 'facet'
 
     def __init__(self, *args, **kwargs):

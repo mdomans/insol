@@ -95,6 +95,14 @@ def test_query_syntax():
     resp = conn.search(Query('*:*', fq=[Filter('cat', 'electronics')], facets=[Facet('cat')]))
     assert resp.docs, "Failed fq and facets object query"
 
+    from datetime import datetime, timedelta
+    now = datetime.now()
+    then = now - timedelta(days=10)
+    resp = conn.search(Query(facets=[DateFacet(
+        'manufacturedate_dt', then, now, timedelta(hours=1)
+    )]))
+    assert resp.facets
+
 def test_shortcuts():
     import shortcuts
     assert shortcuts.find()
